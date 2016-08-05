@@ -121,12 +121,15 @@ public class PerformanceTest {
 
     public static void validateGetStartHisDateInPeriod(CompressedHistory<Integer> history, TreeMap<Date, Integer> treeHistory)
     {
-        for(int i = 0; i < 10000; i ++)
+
+        long start = System.currentTimeMillis();
+
+        for(int i = 0; i < 1000000; i ++)
         {
             Date date = generateDate();
 
-            int span = i%100;
-            Date endDate = DateUtils.addDays(date, span);
+            int dspan = i%100;
+            Date endDate = DateUtils.addDays(date, dspan);
 
 
             Random random = new Random();
@@ -135,15 +138,35 @@ public class PerformanceTest {
 
 
 
-            Date treeDate = getStartHisDateInPeriod(treeHistory, date, endDate);
-            Date firstDate = history.getStartHisDateInPeriod(date, endDate);
+            getStartHisDateInPeriod(treeHistory, date, endDate);
+        }
+        long span = System.currentTimeMillis() - start;
+        System.out.println("it take " + span + " for treeMap");
 
-            if(!isSameDay(treeDate, firstDate))
-            {
-                System.out.println("should not happen");
-            }
+        start = System.currentTimeMillis();
+
+        for(int i = 0; i < 1000000; i ++)
+        {
+            Date date = generateDate();
+
+            int dspan = i%100;
+            Date endDate = DateUtils.addDays(date, dspan);
+
+
+            Random random = new Random();
+            boolean fi = random.nextBoolean();
+            boolean ti = random.nextBoolean();
+
+
+
+            history.getStartHisDateInPeriod(date, endDate);
+
 
         }
+
+        span = System.currentTimeMillis() - start;
+        System.out.println("it take " + span + " for copressed");
+
 
         System.out.println("validateGetStartHisDateInPeriod done");
     }
@@ -173,12 +196,15 @@ public class PerformanceTest {
 
     public static void validateSubMap(CompressedHistory<Integer> history, TreeMap<Date, Integer> treeHistory)
     {
-        for(int i = 0; i < 10000; i ++)
+
+        long start = System.currentTimeMillis();
+
+        for(int i = 0; i < 1000000; i ++)
         {
             Date date = generateDate();
 
-            int span = i%100;
-            Date endDate = DateUtils.addDays(date, span);
+            int dspan = i%100;
+            Date endDate = DateUtils.addDays(date, dspan);
 
 
             Random random = new Random();
@@ -188,21 +214,31 @@ public class PerformanceTest {
 
 
             NavigableMap<Date,Integer> treeValues = treeHistory.subMap(date, fi, endDate, ti);
-            List<Integer> values = history.subMapValues(date, fi, endDate, ti);
-
-            treeValues = treeHistory.subMap(date, true, endDate, true);
-            Set<Date> dateSet = history.getKeySet(date, endDate);
-
-            for(Date dateKey : treeValues.keySet())
-            {
-                if(!dateSet.contains(dateKey))
-                {
-                    System.out.println("should not happen");
-                }
-            }
-
-
         }
+        long span = System.currentTimeMillis() - start;
+        System.out.println("it take " + span + " for treeMap");
+
+        start = System.currentTimeMillis();
+
+        for(int i = 0; i < 1000000; i ++)
+        {
+            Date date = generateDate();
+
+            int dspan = i%100;
+            Date endDate = DateUtils.addDays(date, dspan);
+
+
+            Random random = new Random();
+            boolean fi = random.nextBoolean();
+            boolean ti = random.nextBoolean();
+
+
+
+             history.subMapValues(date, fi, endDate, ti);
+        }
+
+        span = System.currentTimeMillis() - start;
+        System.out.println("it take " + span + " for copressed");
 
         System.out.println("validateSubMap done");
     }
@@ -211,27 +247,32 @@ public class PerformanceTest {
     public static void validateCellingAndFloor(CompressedHistory<Integer> history, TreeMap<Date, Integer> treeHistory)
     {
 
-        for(int i = 0; i < 10000; i ++)
+
+        long start = System.currentTimeMillis();
+
+        for(int i = 0; i < 1000000; i ++)
         {
             Date date = generateDate();
 
             Date treeCeilingKey = treeHistory.ceilingKey(date);
-            Date ceilingKey = history.ceilingKey(date);
-
-            if(!isSameDay(treeCeilingKey, ceilingKey))
-            {
-                System.out.println("should not happen");
-            }
-
             Date treeFloorKey = treeHistory.floorKey(date);
-            Date floorKey = history.floorKey(date);
-
-
-            if(!isSameDay(treeFloorKey, floorKey))
-            {
-                System.out.println("should not happen");
-            }
         }
+        long span = System.currentTimeMillis() - start;
+        System.out.println("it take " + span + " for treeMap");
+
+        start = System.currentTimeMillis();
+
+        for(int i = 0; i < 1000000; i ++)
+        {
+            Date date = generateDate();
+
+            history.ceilingKey(date);
+            history.floorKey(date);
+        }
+
+        span = System.currentTimeMillis() - start;
+        System.out.println("it take " + span + " for compressed");
+
 
         System.out.println("validateCellingAndFloor done");
     }
@@ -262,16 +303,21 @@ public class PerformanceTest {
             Date date = generateDate();
 
             Integer treeValue = treeHistory.get(date);
+        }
+        long span = System.currentTimeMillis() - start;
+        System.out.println("it take " + span + " for treeMap");
+
+        start = System.currentTimeMillis();
+
+        for(int i = 0; i < 1000000; i ++)
+        {
+            Date date = generateDate();
+
             Integer value = history.getValue(date);
-
-            if(value == null )
-
-                if(!isEqual(value, treeValue))
-                {
-                    System.out.println("should not happen");
-                }
         }
 
+        span = System.currentTimeMillis() - start;
+        System.out.println("it take " + span + " for copressed");
         System.out.println("validateGet done");
     }
 

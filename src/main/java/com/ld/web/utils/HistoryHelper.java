@@ -13,9 +13,40 @@ public class HistoryHelper {
 
     private HistoryHelper(){}
     private static Map<Long, YMDIndex> time2Index = new HashMap<>();
+    private static Date[] index2Date;
+    private static int indexDateSpan;
+    private static YMDIndex epochIndex;
     private static final long MILLSECONDS_PER_DAY = 24*3600*1000;
     private static final TimeZone LOCAL_TIME_ZONE = TimeZone.getDefault();
     private static final long LOCAL_TIME_OFFSET = LOCAL_TIME_ZONE.getRawOffset();
+
+    static
+    {
+        Date current = DateUtils.truncate(new Date(), Calendar.DATE);
+        Date epoch = DateUtils.addYears(current, -10);
+        epochIndex = getYMDIndex(epoch);
+        Date future = DateUtils.addYears(current, 5);
+        YMDIndex futureIndex = getYMDIndex(future);
+
+        indexDateSpan = futureIndex.getIntHash() - epochIndex.getIntHash()+1;
+        index2Date = new Date[indexDateSpan];
+
+        Calendar calendar = Calendar.getInstance();
+
+        int epochOffset = epochIndex.getIntHash();
+
+        Date tmpDate = epoch;
+
+        while(tmpDate.compareTo(future) <= 0)
+        {
+            YMDIndex tmpIndex = getYMDIndex(tmpDate);
+            int index =tmpIndex.getIntHash() - epochOffset;
+            index2Date[index] = tmpDate;
+            tmpDate = DateUtils.addDays(tmpDate, 1);
+        }
+    }
+
+
 
     private static long quickTruncate2Date(Date date)
     {
@@ -53,6 +84,25 @@ public class HistoryHelper {
         return result;
     }
 
+    public static Date buildDateFromIndex(YMDIndex ymdIndex)
+    {
+        int index = ymdIndex.getIntHash() - epochIndex.getIntHash();
+
+        if(index >= 0 && index < indexDateSpan)
+        {
+            Date date = new Date(index2Date[index].getTime());
+            return date;
+        }
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(ymdIndex.getYear(), ymdIndex.getMonth(), ymdIndex.getDay()+1);
+        Date date = DateUtils.truncate(calendar.getTime(), Calendar.DATE);
+
+        return date;
+
+    }
+
+    @Deprecated
     public static Date buildDateFromIndex(int yearIndex, int monthIndex, int dayIndex, int epochYear )
     {
         Calendar calendar = Calendar.getInstance();

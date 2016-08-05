@@ -311,7 +311,7 @@ public class CompressedHistory<T> extends AbstractHistory<Date, T> {
                                 if(index != INVALIDE_INDEX)
                                 {
                                     DateValuePair<T> dateValuePair = new DateValuePair<>();
-                                    dateValuePair.setDate(HistoryHelper.buildDateFromIndex(yearIndex, fromIndex.month, fromIndex.day, epochIndex.year));
+                                    dateValuePair.setDate(HistoryHelper.buildDateFromIndex(fromIndex));
                                     dateValuePair.setValue(this.historyValues[index]);
                                     pairList.add(dateValuePair);
                                 }
@@ -369,7 +369,7 @@ public class CompressedHistory<T> extends AbstractHistory<Date, T> {
 
             while(dateIndex.compareTo(latestIndex) <= 0)
             {
-                int yearIndex = dateIndex.getYear() - epochIndex.getYear();
+                int yearIndex = dateIndex.getYear() - epochIndex.year;
 
                 if(valueDateIndex[yearIndex] != null)
                 {
@@ -381,7 +381,7 @@ public class CompressedHistory<T> extends AbstractHistory<Date, T> {
                             {
                                 if(valueDateIndex[yearIndex][dateIndex.month][dateIndex.day] != INVALIDE_INDEX)
                                 {
-                                    return HistoryHelper.buildDateFromIndex(yearIndex, dateIndex.month, dateIndex.day, epochIndex.year);
+                                    return HistoryHelper.buildDateFromIndex(dateIndex);
                                 }
                                 dateIndex.day++;
                             }
@@ -439,7 +439,7 @@ public class CompressedHistory<T> extends AbstractHistory<Date, T> {
                             {
                                 if(valueDateIndex[yearIndex][dateIndex.month][dateIndex.day] != INVALIDE_INDEX)
                                 {
-                                    return HistoryHelper.buildDateFromIndex(yearIndex, dateIndex.month, dateIndex.day, epochIndex.year);
+                                    return HistoryHelper.buildDateFromIndex(dateIndex);
                                 }
                                 dateIndex.day--;
                             }
@@ -589,8 +589,8 @@ public class CompressedHistory<T> extends AbstractHistory<Date, T> {
                             {
                                 if(valueDateIndex[yearIndex][fromIndex.month][fromIndex.day] != INVALIDE_INDEX)
                                 {
-                                    return HistoryHelper.buildDateFromIndex(yearIndex,
-                                            fromIndex.month, fromIndex.day, epochIndex.year);
+
+                                    return HistoryHelper.buildDateFromIndex(fromIndex);
                                 }
                                 fromIndex.day++;
                                 if(fromIndex.compareTo(toIndex) > 0)
@@ -630,6 +630,7 @@ public class CompressedHistory<T> extends AbstractHistory<Date, T> {
         {
             return null;
         }
+
 
         Set<Date> dateList = new HashSet<>();
         for(DateValuePair<T> pair : pairList)

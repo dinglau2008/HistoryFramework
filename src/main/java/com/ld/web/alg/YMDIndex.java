@@ -112,20 +112,18 @@ public class YMDIndex implements Comparable<YMDIndex> {
 
     @Override
     public int compareTo(YMDIndex o) {
-        int yearDiff = year - o.year;
 
-        if(yearDiff == 0)
-        {
-            int monthDiff = month - o.month;
-            if(monthDiff == 0)
-            {
-                return (day - o.day);
-            }
-            return monthDiff;
-        }
+        int src = this.getIntHash();
+        int dst = o.getIntHash();
 
-        return yearDiff;
+        return src - dst;
     }
+
+    public int getIntHash()
+    {
+        return year*379 + month*31 + day;
+    }
+
 
     @Override
     public boolean equals(Object o) {

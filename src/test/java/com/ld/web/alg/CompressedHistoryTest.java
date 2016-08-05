@@ -233,6 +233,7 @@ public class CompressedHistoryTest {
             if(!isSameDay(treeFloorKey, floorKey))
             {
                 System.out.println("should not happen");
+                floorKey = history.floorKey(date);
             }
         }
 
