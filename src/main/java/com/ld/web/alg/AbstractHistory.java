@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NavigableMap;
 import java.util.Set;
+import java.util.function.BiFunction;
 
 /**
  * Created by liuding on 8/3/16.
@@ -37,4 +38,12 @@ public abstract class AbstractHistory<Key extends Comparable<Key>, Value> {
         //default do nothing
         return;
     }
+
+    public abstract Value merge(Key key, Value value,BiFunction<? super Value, ? super Value, ? extends Value> remappingFunction);
+
+    public abstract List<DateValuePair> subMapPair(Key fromKey, boolean fromInclusive,
+                                                   Key toKey, boolean toInclusive);
+
+
+    public abstract boolean isEmpty();
 }

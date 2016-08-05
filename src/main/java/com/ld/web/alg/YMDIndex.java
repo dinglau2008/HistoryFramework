@@ -127,6 +127,26 @@ public class YMDIndex implements Comparable<YMDIndex> {
         return yearDiff;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        YMDIndex ymdIndex = (YMDIndex) o;
+
+        if (year != ymdIndex.year) return false;
+        if (month != ymdIndex.month) return false;
+        return day == ymdIndex.day;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = year;
+        result = 31 * result + month;
+        result = 31 * result + day;
+        return result;
+    }
 
     @Override
     public String toString() {

@@ -3,16 +3,14 @@ package com.ld.web.alg;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 
-import java.io.*;
 import java.util.*;
 
 /**
- * Created by liuding on 8/3/16.
+ * Created by liuding on 8/5/16.
  */
-public class CompressedHistoryTest {
+public class PerformanceTest {
 
     private static Date epoch;
-    private static BufferedWriter bw ;
 
     static {
         Calendar calendar = Calendar.getInstance();
@@ -20,14 +18,13 @@ public class CompressedHistoryTest {
         epoch = DateUtils.truncate(calendar.getTime(), calendar.DATE);
     }
 
-    public static void validateData() throws IOException {
+    public static void performCompare()
+    {
         CompressedHistory<Integer> history = new CompressedHistory();
         history.init(epoch);
         TreeMap<Date, Integer> treeHistory = new TreeMap<>();
 
-
-        insert(history, treeHistory, 1000);
-        merge(history, treeHistory, 1000);
+        merge(history, treeHistory, 100000);
 
         validateGet(history, treeHistory);
         validateCellingAndFloor(history, treeHistory);
@@ -60,15 +57,14 @@ public class CompressedHistoryTest {
         return date;
     }
 
-    private static void insert(CompressedHistory<Integer> history, TreeMap<Date, Integer> treeHistory, int maxValue) throws IOException {
+    private static void insert(CompressedHistory<Integer> history, TreeMap<Date, Integer> treeHistory, int maxValue)
+    {
         Random random = new Random();
 
         for(int i = 0; i < maxValue; i ++)
         {
             Date date = generateDate();
             Integer value = random.nextInt(1000000);
-            bw.write(date + "\t" + value + "\n");
-
 
             history.insert(date, value);
             treeHistory.put(date, value);
@@ -81,14 +77,14 @@ public class CompressedHistoryTest {
 
 
 
-    private static void merge(CompressedHistory<Integer> history, TreeMap<Date, Integer> treeHistory, int maxValue) throws IOException {
+    private static void merge(CompressedHistory<Integer> history, TreeMap<Date, Integer> treeHistory, int maxValue)
+    {
         Random random = new Random();
 
-        for(int i = 0; i < maxValue; i ++)
+        for(int i = 0; i < maxValue; i++)
         {
             Date date = generateDate();
             Integer value = random.nextInt(1000000);
-            bw.write(date + "\t" + value + "\n");
 
             history.merge(date, value, Integer::sum);
             treeHistory.merge(date, value, Integer::sum);
@@ -136,6 +132,8 @@ public class CompressedHistoryTest {
             Random random = new Random();
             boolean fi = random.nextBoolean();
             boolean ti = random.nextBoolean();
+
+
 
             Date treeDate = getStartHisDateInPeriod(treeHistory, date, endDate);
             Date firstDate = history.getStartHisDateInPeriod(date, endDate);
@@ -223,7 +221,6 @@ public class CompressedHistoryTest {
             if(!isSameDay(treeCeilingKey, ceilingKey))
             {
                 System.out.println("should not happen");
-                ceilingKey = history.ceilingKey(date);
             }
 
             Date treeFloorKey = treeHistory.floorKey(date);
@@ -258,27 +255,29 @@ public class CompressedHistoryTest {
     public static void validateGet(CompressedHistory<Integer> history, TreeMap<Date, Integer> treeHistory)
     {
 
-        for(int i = 0; i < 1000; i ++)
+        long start = System.currentTimeMillis();
+
+        for(int i = 0; i < 1000000; i ++)
         {
             Date date = generateDate();
 
             Integer treeValue = treeHistory.get(date);
             Integer value = history.getValue(date);
 
-            if(!isEqual(value, treeValue))
-            {
-                System.out.println("should not happen");
-                value = history.getValue(date);
-            }
+            if(value == null )
+
+                if(!isEqual(value, treeValue))
+                {
+                    System.out.println("should not happen");
+                }
         }
 
         System.out.println("validateGet done");
     }
 
 
-    public static void main(String[] args) throws IOException {
-        bw = new BufferedWriter(new FileWriter("/tmp/compressed"));
-        validateData();
-        bw.close();
+    public static void main(String[] args) {
+
+        performCompare();
     }
 }
